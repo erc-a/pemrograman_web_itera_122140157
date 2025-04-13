@@ -30,11 +30,18 @@ Berikut adalah beberapa fitur ES6+ yang digunakan dalam aplikasi ini:
 2. **Template Literals**: Menggunakan template literals untuk menggabungkan string dan variabel.
     ```js
     item.innerHTML = `
-        <h3>${tugas.judul}</h3>
-        <p>Matkul: ${tugas.matkul}</p>
-        <p>Deadline: ${formatTanggal(tugas.deadline)}</p>
-        <button data-id="${tugas.id}" class="hapus-btn">Hapus</button>
-    `;
+            <div class="tugas-item">
+                <div class="tugas-content">
+                    <h3>${tugas.judul}</h3>
+                    <p>${tugas.matkul}</p>
+                    <p>Deadline: ${formatTanggal(tugas.deadline)}</p>
+                </div>
+                <div class="tugas-actions">
+                    <button data-id="${tugas.id}" class="edit-btn">Edit</button>
+                    <button data-id="${tugas.id}" class="hapus-btn">Hapus</button>
+                </div>
+            </div>
+        `;
     ```
 
 3. **Destructuring**: Destructuring digunakan untuk mengambil nilai dari objek secara langsung.
