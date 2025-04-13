@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="./assets/MyT.png" />
+  <title>MyTugas</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <p id="waktu-lokal">Memuat waktu lokal...</p>
+    <p id="info-cuaca">Memuat informasi cuaca...</p>
+  
+    <h1>Dashboard Tugas Kuliah</h1>
+  
+    <form id="form-tugas">
+      <input type="text" id="judul" placeholder="Judul Tugas" required />
+      <input type="text" id="matkul" placeholder="Mata Kuliah" required />
+      <input type="date" id="deadline" required />
+      <button type="submit" id="submit-btn">Tambah Tugas</button>
+    </form>
+  
+    <div id="notification" class="notification"></div>
+    <ul id="daftar-tugas"></ul>
+    <div id="list" class="tugas-grid"></div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
