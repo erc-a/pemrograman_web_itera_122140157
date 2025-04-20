@@ -1,0 +1,24 @@
+.book-filter {
+    background-color: #2a2a3c;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    margin-bottom: 2rem;
+  }
+  
+  .book-filter input,
+  .book-filter select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #444;
+    background-color: #1e1e2f;
+    color: #f3f4f6;
+    border-radius: 8px;
+    width: 100%;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+  
