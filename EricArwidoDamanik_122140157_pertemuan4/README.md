@@ -3,9 +3,9 @@
 
 Pemograman Python Dasar
 
-Nama : Eric Arwido Damanik
-NIM : 122140157
-Kelas : RB
+- Nama : Eric Arwido Damanik
+- NIM : 122140157
+- Kelas : RB
 
 
 ## Deskripsi
@@ -33,7 +33,7 @@ Modul matematika berisi:
 
 ### 4. `main.py`
 File utama yang:
-- Mengimpor dan menggunakan semua modul dari 'math_operations.py'
+- Mengimpor dan menggunakan semua modul dari `math_operations.py`
 - Menampilkan hasil perhitungan dengan format rapi
 - Menggunakan multiple import methods
 
