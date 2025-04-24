@@ -39,7 +39,7 @@ File utama yang:
 
 ## Struktur Folder
 ```
-/Praktikum3/
+/EricArwidoDamanik_122140157_pertemuan4/
 ├── bmi.py
 ├── main.py
 ├── math_operations.py
