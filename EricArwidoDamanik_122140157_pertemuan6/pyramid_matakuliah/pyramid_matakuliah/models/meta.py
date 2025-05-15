@@ -1,5 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import MetaData
+from sqlalchemy.orm import scoped_session, sessionmaker
+from zope.sqlalchemy import register
 
 # Recommended naming convention used by Alembic, as various different database
 # providers will autogenerate vastly different names making migrations more
@@ -13,4 +15,10 @@ NAMING_CONVENTION = {
 }
 
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
+
+# Create a thread-safe session factory
+DBSession = scoped_session(sessionmaker())
+register(DBSession)
+
+# Create a base class for declarative models
 Base = declarative_base(metadata=metadata)

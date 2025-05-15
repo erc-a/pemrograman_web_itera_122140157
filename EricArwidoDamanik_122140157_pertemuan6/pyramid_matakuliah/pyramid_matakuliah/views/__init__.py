@@ -1,2 +1,3 @@
-config.include('.routes')
-config.scan()  # untuk menemukan semua @view_config
+def includeme(config):
+    """Initialize views configuration."""
+    config.scan('.crud_operations')

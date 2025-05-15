@@ -1,60 +1,90 @@
+import datetime
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
 from pyramid.response import Response
-from sqlalchemy.exc import DBAPIError
-import json
+from ..models.matakuliah import Matakuliah
+from ..models.meta import DBSession
 
-from ..models import Matakuliah
-
-@view_config(route_name='matakuliah_list', renderer='json', request_method='GET')
-def matakuliah_list(request):
+@view_config(route_name='matakuliah_list', request_method='GET', renderer='json')
+def get_matakuliah_list(request):
     try:
-        matakuliah = request.dbsession.query(Matakuliah).all()
-        return [{'id': mk.id, 'kode_mk': mk.kode_mk, 'nama_mk': mk.nama_mk, 
-                'sks': mk.sks, 'semester': mk.semester} for mk in matakuliah]
-    except DBAPIError:
-        return Response(json.dumps({'error': 'Database error'}), 
-                       content_type='application/json', status=500)
+        matakuliah_list = request.dbsession.query(Matakuliah).all()
+        return [{
+            'id': m.id,
+            'name': m.name,
+            'description': m.description,
+            'created_at': m.created_at.isoformat()
+        } for m in matakuliah_list]
+    except Exception as e:
+        request.response.status = 400
+        return {'status': 'error', 'message': str(e)}
 
-@view_config(route_name='matakuliah_create', renderer='json', request_method='POST')
-def matakuliah_create(request):
+@view_config(route_name='matakuliah_list', request_method='POST', renderer='json')
+def create_matakuliah(request):
     try:
-        json_body = request.json_body
-        matakuliah = models.Matakuliah(
-            kode_mk=json_body['kode_mk'],
-            nama_mk=json_body['nama_mk'],
-            sks=json_body['sks'],
-            semester=json_body['semester']
+        json_data = request.json_body
+        mk = Matakuliah(
+            name=json_data['name'],
+            description=json_data['description'],
+            created_at=datetime.datetime.now()
         )
-        request.dbsession.add(matakuliah)
-        return {'status': 'success', 'message': 'Matakuliah created'}
-    except DBAPIError:
-        return Response(json.dumps({'error': 'Database error'}), content_type='application/json', status=500)
-
-@view_config(route_name='matakuliah_update', renderer='json', request_method='PUT')
-def matakuliah_update(request):
-    try:
-        json_body = request.json_body
-        matakuliah = request.dbsession.query(models.Matakuliah).filter_by(id=request.matchdict['id']).first()
-        if matakuliah is None:
-            return Response(json.dumps({'error': 'Matakuliah not found'}), content_type='application/json', status=404)
-            
-        matakuliah.kode_mk = json_body['kode_mk']
-        matakuliah.nama_mk = json_body['nama_mk']
-        matakuliah.sks = json_body['sks']
-        matakuliah.semester = json_body['semester']
+        request.dbsession.add(mk)
+        request.dbsession.flush()
         
-        return {'status': 'success', 'message': 'Matakuliah updated'}
-    except DBAPIError:
-        return Response(json.dumps({'error': 'Database error'}), content_type='application/json', status=500)
+        return {
+            'status': 'success',
+            'message': 'Matakuliah created successfully',
+            'data': {
+                'id': mk.id,
+                'name': mk.name,
+                'description': mk.description,
+                'created_at': mk.created_at.isoformat()
+            }
+        }
+    except Exception as e:
+        request.response.status = 400
+        return {'status': 'error', 'message': str(e)}
 
-@view_config(route_name='matakuliah_delete', renderer='json', request_method='DELETE')
+@view_config(route_name='matakuliah_detail', renderer='json')
+def matakuliah_detail(request):
+    mid = int(request.matchdict['id'])
+    m = request.dbsession.query(Matakuliah).get(mid)
+    if not m:
+        raise HTTPNotFound(json_body={'error': 'Matakuliah tidak ditemukan'})
+    return {'matakuliah': m.to_dict()}
+
+@view_config(route_name='matakuliah_add', request_method='POST', renderer='json')
+def matakuliah_add(request):
+    data = request.json_body
+    for f in ['kode_mk', 'nama_mk', 'sks', 'semester']:
+        if f not in data:
+            raise HTTPBadRequest(json_body={'error': f'Field {f} wajib diisi'})
+    mk = Matakuliah(
+        kode_mk=data['kode_mk'], nama_mk=data['nama_mk'],
+        sks=int(data['sks']), semester=int(data['semester'])
+    )
+    request.dbsession.add(mk)
+    request.dbsession.flush()
+    return {'success': True, 'matakuliah': mk.to_dict()}
+
+@view_config(route_name='matakuliah_update', request_method='PUT', renderer='json')
+def matakuliah_update(request):
+    mid = int(request.matchdict['id'])
+    m = request.dbsession.query(Matakuliah).get(mid)
+    if not m:
+        raise HTTPNotFound(json_body={'error': 'Matakuliah tidak ditemukan'})
+    data = request.json_body
+    if 'kode_mk' in data: m.kode_mk = data['kode_mk']
+    if 'nama_mk' in data: m.nama_mk = data['nama_mk']
+    if 'sks' in data: m.sks = int(data['sks'])
+    if 'semester' in data: m.semester = int(data['semester'])
+    return {'success': True, 'matakuliah': m.to_dict()}
+
+@view_config(route_name='matakuliah_delete', request_method='DELETE', renderer='json')
 def matakuliah_delete(request):
-    try:
-        matakuliah = request.dbsession.query(models.Matakuliah).filter_by(id=request.matchdict['id']).first()
-        if matakuliah is None:
-            return Response(json.dumps({'error': 'Matakuliah not found'}), content_type='application/json', status=404)
-            
-        request.dbsession.delete(matakuliah)
-        return {'status': 'success', 'message': 'Matakuliah deleted'}
-    except DBAPIError:
-        return Response(json.dumps({'error': 'Database error'}), content_type='application/json', status=500)
+    mid = int(request.matchdict['id'])
+    m = request.dbsession.query(Matakuliah).get(mid)
+    if not m:
+        raise HTTPNotFound(json_body={'error': 'Matakuliah tidak ditemukan'})
+    request.dbsession.delete(m)
+    return {'success': True, 'message': f'Matakuliah dengan id {mid} berhasil dihapus'}
